@@ -1,0 +1,7 @@
+{
+  "name": "MarufEdge ProMedia ERP",
+  "description": "A high-performance, AI-driven ERP solution for managing sales, inventory, and finance with live automation and intelligent insights.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
