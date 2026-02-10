@@ -14,6 +14,8 @@ const HR: React.FC<Props> = ({ data, onUpdate, t }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({ name: '', position: '', salary: 0 });
 
+  const currency = data.settings.currency;
+
   const handleAddStaff = (e: React.FormEvent) => {
     e.preventDefault();
     const newStaff: Staff = {
@@ -30,7 +32,7 @@ const HR: React.FC<Props> = ({ data, onUpdate, t }) => {
   };
 
   const processSalary = (staff: Staff) => {
-    const confirm = window.confirm(`Process monthly salary payment of $${staff.salary} to ${staff.name}?`);
+    const confirm = window.confirm(`Process monthly salary payment of ${currency} ${staff.salary} to ${staff.name}?`);
     if (confirm) {
       onUpdate(prev => ({
         ...prev,
@@ -73,7 +75,7 @@ const HR: React.FC<Props> = ({ data, onUpdate, t }) => {
         </div>
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
           <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl"><CreditCard size={24}/></div>
-          <div><p className="text-xs font-bold text-slate-400 uppercase">Monthly Liability</p><h4 className="text-2xl font-black text-slate-800">${data.staff.reduce((acc, s) => acc + s.salary, 0).toLocaleString()}</h4></div>
+          <div><p className="text-xs font-bold text-slate-400 uppercase">Monthly Liability</p><h4 className="text-2xl font-black text-slate-800">{currency} {data.staff.reduce((acc, s) => acc + s.salary, 0).toLocaleString()}</h4></div>
         </div>
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
           <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl"><Calendar size={24}/></div>
@@ -102,7 +104,7 @@ const HR: React.FC<Props> = ({ data, onUpdate, t }) => {
                 <div className="flex flex-wrap items-center gap-8">
                    <div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Monthly Salary</p>
-                      <p className="font-black text-slate-800">${member.salary.toLocaleString()}</p>
+                      <p className="font-black text-slate-800">{currency} {member.salary.toLocaleString()}</p>
                    </div>
                    <div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Status</p>
@@ -140,7 +142,7 @@ const HR: React.FC<Props> = ({ data, onUpdate, t }) => {
                 <input required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl" value={formData.position} onChange={e => setFormData({...formData, position: e.target.value})} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Base Monthly Salary ($)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Base Monthly Salary ({currency})</label>
                 <input type="number" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl" value={formData.salary} onChange={e => setFormData({...formData, salary: Number(e.target.value)})} />
               </div>
               <button type="submit" className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 shadow-xl shadow-indigo-100 mt-4 transition-all">Confirm Onboarding</button>

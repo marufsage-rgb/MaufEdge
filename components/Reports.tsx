@@ -43,6 +43,8 @@ const Reports: React.FC<Props> = ({ data, t }) => {
   const [filterCategory, setFilterCategory] = useState<string>('All');
   const [filterMethod, setFilterMethod] = useState<string>('All');
 
+  const currency = data.settings.currency;
+
   const categories = useMemo(() => ['All', ...new Set(data.products.map(p => p.category))], [data.products]);
 
   const filteredSales = useMemo(() => {
@@ -166,7 +168,7 @@ const Reports: React.FC<Props> = ({ data, t }) => {
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-5 text-indigo-600"><DollarSign size={80}/></div>
           <p className="text-xs font-bold text-slate-400 uppercase mb-1">Period Revenue</p>
-          <h4 className="text-3xl font-black text-slate-800">${financials.revenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
+          <h4 className="text-3xl font-black text-slate-800">{currency} {financials.revenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
           <div className="flex items-center gap-2 mt-4">
              <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded uppercase">Gross Income</span>
           </div>
@@ -176,7 +178,7 @@ const Reports: React.FC<Props> = ({ data, t }) => {
           <div className="absolute top-0 right-0 p-4 opacity-5 text-emerald-600"><TrendingUp size={80}/></div>
           <p className="text-xs font-bold text-slate-400 uppercase mb-1">Net Profit/Loss</p>
           <h4 className={`text-3xl font-black ${financials.netProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-             ${financials.netProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+             {currency} {financials.netProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </h4>
           <div className="flex items-center gap-2 mt-4">
              <span className={`px-2 py-0.5 text-[10px] font-black rounded uppercase ${financials.netProfit >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
@@ -188,7 +190,7 @@ const Reports: React.FC<Props> = ({ data, t }) => {
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-5 text-amber-600"><ShieldCheck size={80}/></div>
           <p className="text-xs font-bold text-slate-400 uppercase mb-1">Tax Liability</p>
-          <h4 className="text-3xl font-black text-slate-800">${financials.collectedTax.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
+          <h4 className="text-3xl font-black text-slate-800">{currency} {financials.collectedTax.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
           <div className="flex items-center gap-2 mt-4">
              <span className="px-2 py-0.5 bg-amber-50 text-amber-600 text-[10px] font-black rounded uppercase">VAT @ {data.settings.taxRate}%</span>
           </div>
@@ -197,7 +199,7 @@ const Reports: React.FC<Props> = ({ data, t }) => {
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-5 text-rose-600"><ArrowDownCircle size={80}/></div>
           <p className="text-xs font-bold text-slate-400 uppercase mb-1">Operational Ex</p>
-          <h4 className="text-3xl font-black text-slate-800">${(financials.expenses + financials.salaries).toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
+          <h4 className="text-3xl font-black text-slate-800">{currency} {(financials.expenses + financials.salaries).toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
           <div className="flex items-center gap-2 mt-4">
              <span className="px-2 py-0.5 bg-rose-50 text-rose-600 text-[10px] font-black rounded uppercase">Bills & Payroll</span>
           </div>
@@ -226,7 +228,7 @@ const Reports: React.FC<Props> = ({ data, t }) => {
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} tickFormatter={(v) => `$${v}`} />
+                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} tickFormatter={(v) => `${currency}${v}`} />
                 <RechartsTooltip contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)'}} />
                 <Area type="monotone" dataKey="amount" stroke="#4f46e5" fillOpacity={1} fill="url(#colorInflow)" strokeWidth={4} />
               </AreaChart>
@@ -246,29 +248,29 @@ const Reports: React.FC<Props> = ({ data, t }) => {
           <div className="space-y-5">
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
                <div><p className="font-bold text-slate-800">Total Sales (Gross)</p><p className="text-[10px] text-slate-400 font-bold uppercase">Before COGS</p></div>
-               <p className="font-black text-indigo-600">+${financials.revenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+               <p className="font-black text-indigo-600">+{currency} {financials.revenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
             </div>
             
             <div className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl">
                <div><p className="font-bold text-slate-800">Cost of Goods (COGS)</p><p className="text-[10px] text-slate-400 font-bold uppercase">Inventory Cost</p></div>
-               <p className="font-black text-rose-500">-${financials.cogs.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+               <p className="font-black text-rose-500">-{currency} {financials.cogs.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
             </div>
 
             <div className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl">
                <div><p className="font-bold text-slate-800">Operational Expenses</p><p className="text-[10px] text-slate-400 font-bold uppercase">Rent, Utility, etc</p></div>
-               <p className="font-black text-rose-500">-${financials.expenses.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+               <p className="font-black text-rose-500">-{currency} {financials.expenses.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
             </div>
 
             <div className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl">
                <div><p className="font-bold text-slate-800">Employment Salary</p><p className="text-[10px] text-slate-400 font-bold uppercase">Payroll Allocation</p></div>
-               <p className="font-black text-rose-500">-${financials.salaries.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+               <p className="font-black text-rose-500">-{currency} {financials.salaries.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
             </div>
 
             <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between">
                <div><p className="text-xl font-black text-slate-800">Net Business Result</p><p className="text-[10px] text-slate-400 font-bold uppercase">Final Profit/Loss</p></div>
                <div className="text-right">
                   <p className={`text-3xl font-black ${financials.netProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                    ${financials.netProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    {currency} {financials.netProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </p>
                </div>
             </div>
@@ -294,7 +296,7 @@ const Reports: React.FC<Props> = ({ data, t }) => {
                 {data.bankAccounts.map(bank => (
                   <div key={bank.id} className="bg-white/5 p-6 rounded-3xl border border-white/10 hover:bg-white/10 transition-colors">
                      <p className="text-indigo-400 font-black text-[10px] uppercase mb-2 tracking-widest">{bank.bankName}</p>
-                     <h4 className="text-2xl font-black">${bank.balance.toLocaleString()}</h4>
+                     <h4 className="text-2xl font-black">{currency} {bank.balance.toLocaleString()}</h4>
                      <p className="text-slate-500 text-xs mt-1 font-mono">{bank.accountNumber}</p>
                   </div>
                 ))}
@@ -308,7 +310,7 @@ const Reports: React.FC<Props> = ({ data, t }) => {
           <div className="w-full md:w-80 space-y-6">
              <div className="bg-indigo-600 p-8 rounded-[2rem] shadow-xl shadow-indigo-900/40">
                 <p className="text-indigo-200 font-bold uppercase text-[10px] tracking-widest mb-2">Government Tax Ledger</p>
-                <h2 className="text-4xl font-black mb-4">${financials.collectedTax.toLocaleString()}</h2>
+                <h2 className="text-4xl font-black mb-4">{currency} {financials.collectedTax.toLocaleString()}</h2>
                 <div className="h-1 bg-white/20 rounded-full overflow-hidden mb-4">
                    <div className="h-full bg-white w-3/4"></div>
                 </div>
@@ -318,7 +320,7 @@ const Reports: React.FC<Props> = ({ data, t }) => {
              <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-center justify-between">
                 <div>
                    <p className="text-[10px] font-black uppercase text-slate-400 mb-1">On-Hand Cash</p>
-                   <p className="text-xl font-bold">${data.cashBalance.toLocaleString()}</p>
+                   <p className="text-xl font-bold">{currency} {data.cashBalance.toLocaleString()}</p>
                 </div>
                 <div className="w-10 h-10 bg-emerald-500/20 text-emerald-500 rounded-xl flex items-center justify-center"><ArrowUpCircle size={20}/></div>
              </div>

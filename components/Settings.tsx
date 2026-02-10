@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { ERPData, AppSettings } from '../types';
 import { 
-  User, Mail, Save, Server, Globe, ShieldCheck, RefreshCw
+  User, Mail, Save, Server, Globe, ShieldCheck, RefreshCw, Percent, Building2
 } from 'lucide-react';
 
 interface Props {
@@ -34,20 +34,20 @@ const Settings: React.FC<Props> = ({ data, onUpdate, t }) => {
         <button 
           onClick={handleSave}
           disabled={isSaving}
-          className="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-indigo-700 shadow-xl disabled:opacity-50"
+          className="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-indigo-700 shadow-xl disabled:opacity-50 transition-all active:scale-95"
         >
           {isSaving ? <RefreshCw className="animate-spin" size={18} /> : <Save size={18} />}
-          {isSaving ? '...' : t('save')}
+          {isSaving ? 'Saving...' : t('save')}
         </button>
       </div>
 
       <div className={`grid grid-cols-1 md:grid-cols-3 gap-8 ${isRTL ? 'md:grid-cols-[2fr_1fr]' : ''}`}>
         {/* Navigation Sidebar */}
         <div className={`space-y-2 ${isRTL ? 'md:order-2' : ''}`}>
-          {['Profile', 'Regional', 'Database'].map((tab, i) => (
+          {['Profile & Branding', 'Regional & Finance', 'System & Database'].map((tab, i) => (
             <button 
               key={tab} 
-              className={`w-full text-${isRTL ? 'right' : 'left'} px-4 py-3 rounded-xl text-sm font-bold transition-all ${i === 0 ? 'bg-white shadow-sm text-indigo-600 border' : 'text-slate-500 hover:bg-slate-100'}`}
+              className={`w-full text-${isRTL ? 'right' : 'left'} px-4 py-3 rounded-xl text-sm font-bold transition-all ${i === 1 ? 'bg-white shadow-sm text-indigo-600 border' : 'text-slate-500 hover:bg-slate-100'}`}
             >
               {tab}
             </button>
@@ -55,17 +55,18 @@ const Settings: React.FC<Props> = ({ data, onUpdate, t }) => {
         </div>
 
         <div className={`md:col-span-2 space-y-6 ${isRTL ? 'md:order-1' : ''}`}>
+          {/* Regional & Financial Settings */}
           <section className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6">
             <h3 className={`text-lg font-bold text-slate-800 flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <Globe className="text-indigo-600" size={20} />
-              {t('language')} & {t('currency')}
+              Financials & Localization
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase mb-2">{t('language')}</label>
                 <select 
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-medium"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-medium outline-none focus:ring-2 focus:ring-indigo-100"
                   value={formData.language}
                   onChange={e => setFormData({...formData, language: e.target.value as any})}
                 >
@@ -76,24 +77,41 @@ const Settings: React.FC<Props> = ({ data, onUpdate, t }) => {
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase mb-2">{t('currency')}</label>
                 <input 
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-medium text-center"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-medium text-center outline-none focus:ring-2 focus:ring-indigo-100"
                   value={formData.currency}
                   onChange={e => setFormData({...formData, currency: e.target.value})}
                 />
               </div>
+              <div className="md:col-span-2">
+                <label className="block text-xs font-bold text-slate-400 uppercase mb-2 flex items-center gap-2">
+                  <Percent size={14} className="text-indigo-600" /> Default Sales Tax Rate (%)
+                </label>
+                <div className="relative">
+                  <input 
+                    type="number"
+                    step="0.01"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-medium outline-none focus:ring-2 focus:ring-indigo-100"
+                    value={formData.taxRate}
+                    onChange={e => setFormData({...formData, taxRate: parseFloat(e.target.value) || 0})}
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</div>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-2 font-medium">This VAT rate will be automatically applied to all new transactions in the POS terminal.</p>
+              </div>
             </div>
           </section>
 
+          {/* Branding Section */}
           <section className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6">
             <h3 className={`text-lg font-bold text-slate-800 flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <User className="text-indigo-600" size={20} />
-              Branding
+              <Building2 className="text-indigo-600" size={20} />
+              Branding & Identity
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Company Name</label>
                 <input 
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-100"
                   value={formData.companyName}
                   onChange={e => setFormData({...formData, companyName: e.target.value})}
                 />
@@ -101,7 +119,7 @@ const Settings: React.FC<Props> = ({ data, onUpdate, t }) => {
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Admin Name</label>
                 <input 
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-100"
                   value={formData.userName}
                   onChange={e => setFormData({...formData, userName: e.target.value})}
                 />
@@ -109,18 +127,19 @@ const Settings: React.FC<Props> = ({ data, onUpdate, t }) => {
             </div>
           </section>
 
+          {/* Database Section */}
           <section className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-6">
             <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
               <h3 className={`text-lg font-bold text-slate-800 flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Server className="text-emerald-600" size={20} />
-                Oman SQL Hub
+                Automation Server
               </h3>
-              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase rounded-lg">
-                <ShieldCheck size={12} /> Live
+              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase rounded-lg border border-emerald-100">
+                <ShieldCheck size={12} /> Live Sync Active
               </div>
             </div>
-            <div className="p-4 bg-slate-900 rounded-2xl font-mono text-[10px] text-indigo-300">
-               mysql://muscat-node-01.om:3306/erp_live
+            <div className="p-4 bg-slate-900 rounded-2xl font-mono text-[10px] text-indigo-300 border border-white/5 shadow-inner">
+               mysql://muscat-node-01.om:3306/erp_live_production
             </div>
           </section>
         </div>

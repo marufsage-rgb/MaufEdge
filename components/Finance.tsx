@@ -25,6 +25,8 @@ const Finance: React.FC<Props> = ({ data, onAddTransaction, onUpdate, t }) => {
     bankAccountId: ''
   });
 
+  const currency = data.settings.currency;
+
   const [bankForm, setBankForm] = useState({ bankName: '', accountNumber: '', type: 'current' as any, balance: 0 });
 
   const filteredTransactions = useMemo(() => {
@@ -52,8 +54,7 @@ const Finance: React.FC<Props> = ({ data, onAddTransaction, onUpdate, t }) => {
     setBankForm({ bankName: '', accountNumber: '', type: 'current', balance: 0 });
   };
 
-  const totalIncome = data.transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
-  const totalExpense = data.transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+  const totalLiquidity = data.cashBalance + data.bankAccounts.reduce((acc, b) => acc + b.balance, 0);
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-10">
@@ -65,7 +66,7 @@ const Finance: React.FC<Props> = ({ data, onAddTransaction, onUpdate, t }) => {
             <div className="flex justify-between items-start mb-10">
               <div>
                  <p className="text-indigo-200 font-bold uppercase text-[10px] tracking-widest mb-2">Total Corporate Liquidity</p>
-                 <h2 className="text-5xl font-black tracking-tight">${(data.cashBalance + data.bankAccounts.reduce((acc, b) => acc + b.balance, 0)).toLocaleString()}</h2>
+                 <h2 className="text-5xl font-black tracking-tight">{currency} {totalLiquidity.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h2>
               </div>
               <div className="p-4 bg-white/10 rounded-3xl backdrop-blur-md border border-white/20"><Wallet size={32}/></div>
             </div>
@@ -73,11 +74,11 @@ const Finance: React.FC<Props> = ({ data, onAddTransaction, onUpdate, t }) => {
             <div className="grid grid-cols-2 gap-4">
                <div className="bg-white/10 p-5 rounded-2xl border border-white/10 backdrop-blur-sm">
                   <p className="text-indigo-200 text-[10px] font-black uppercase mb-1">Physical Cash</p>
-                  <p className="text-2xl font-black">${data.cashBalance.toLocaleString()}</p>
+                  <p className="text-2xl font-black">{currency} {data.cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
                </div>
                <div className="bg-white/10 p-5 rounded-2xl border border-white/10 backdrop-blur-sm">
                   <p className="text-indigo-200 text-[10px] font-black uppercase mb-1">Bank Assets</p>
-                  <p className="text-2xl font-black">${data.bankAccounts.reduce((acc, b) => acc + b.balance, 0).toLocaleString()}</p>
+                  <p className="text-2xl font-black">{currency} {data.bankAccounts.reduce((acc, b) => acc + b.balance, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
                </div>
             </div>
           </div>
@@ -101,7 +102,7 @@ const Finance: React.FC<Props> = ({ data, onAddTransaction, onUpdate, t }) => {
                    <p className="text-xs text-slate-400 font-medium font-mono">{bank.accountNumber}</p>
                    <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
                       <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">{bank.type}</p>
-                      <p className="text-xl font-black text-slate-800">${bank.balance.toLocaleString()}</p>
+                      <p className="text-xl font-black text-slate-800">{currency} {bank.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
                    </div>
                 </div>
               ))}
@@ -145,7 +146,7 @@ const Finance: React.FC<Props> = ({ data, onAddTransaction, onUpdate, t }) => {
                 </div>
                 <div className="text-right">
                    <p className={`text-2xl font-black ${tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                      {tx.type === 'income' ? '+' : '-'}${tx.amount.toLocaleString()}
+                      {tx.type === 'income' ? '+' : '-'}{currency} {tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                    </p>
                    {tx.bankAccountId && <p className="text-[10px] font-bold text-indigo-600 uppercase mt-1">Direct Bank Deposit</p>}
                 </div>

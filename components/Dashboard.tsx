@@ -19,7 +19,7 @@ const Dashboard: React.FC<Props> = ({ data, t }) => {
   const lowStockItems = data.products.filter(p => p.stock <= p.minStockLevel);
   const totalSales = data.sales.reduce((acc, s) => acc + s.totalAmount, 0);
 
-  const formatMoney = (val: number) => val.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const formatMoney = (val: number) => val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 });
 
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
@@ -47,7 +47,7 @@ const Dashboard: React.FC<Props> = ({ data, t }) => {
       <div>
         <p className="text-sm font-medium text-slate-500 mb-1">{title}</p>
         <h3 className="text-2xl font-bold text-slate-800" dir="ltr">
-           {isRTL ? `${formatMoney(parseFloat(value.replace(/[^0-9.]/g, '')))} ${currency}` : `${currency} ${formatMoney(parseFloat(value.replace(/[^0-9.]/g, '')))}`}
+           {isRTL ? `${formatMoney(value)} ${currency}` : `${currency} ${formatMoney(value)}`}
         </h3>
       </div>
     </div>
@@ -58,27 +58,27 @@ const Dashboard: React.FC<Props> = ({ data, t }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           title={t('total_balance')} 
-          value={data.cashBalance.toString()} 
+          value={data.cashBalance} 
           icon={DollarSign} 
           color="indigo" 
           trend={12.5}
         />
         <StatCard 
           title={t('revenue')} 
-          value={totalSales.toString()} 
+          value={totalSales} 
           icon={ShoppingCart} 
           color="emerald" 
           trend={8.2}
         />
         <StatCard 
           title={t('stock_value')} 
-          value={totalStockValue.toString()} 
+          value={totalStockValue} 
           icon={Package} 
           color="amber" 
         />
         <StatCard 
           title={t('alerts')} 
-          value={lowStockItems.length.toString()} 
+          value={lowStockItems.length} 
           icon={AlertTriangle} 
           color="rose" 
         />
@@ -95,7 +95,7 @@ const Dashboard: React.FC<Props> = ({ data, t }) => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} reversed={isRTL} />
                 <YAxis hide orientation={isRTL ? 'right' : 'left'} />
-                <Tooltip />
+                <Tooltip formatter={(value: number) => [`${currency} ${formatMoney(value)}`, 'Sales']} />
                 <Area type="monotone" dataKey="sales" stroke="#4f46e5" strokeWidth={3} fill="#4f46e520" />
               </AreaChart>
             </ResponsiveContainer>

@@ -27,6 +27,7 @@ import AutomationHub from './components/AutomationHub';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
 import HR from './components/HR';
+import Logo from './components/Logo';
 
 const INITIAL_DATA: ERPData = {
   products: [
@@ -55,9 +56,9 @@ const INITIAL_DATA: ERPData = {
   ],
   cashBalance: 2500,
   settings: {
-    companyName: 'MarufEdge Oman',
+    companyName: 'MarufEdge ProMedia',
     userName: 'Admin',
-    userEmail: 'admin@marufedge.om',
+    userEmail: 'admin@promedia.om',
     currency: 'OMR',
     language: 'en',
     taxRate: 5.0, // VAT in Oman is 5%
@@ -140,7 +141,7 @@ const App: React.FC = () => {
     switch (activeTab) {
       case 'dashboard': return <Dashboard data={data} t={t} />;
       case 'inventory': return <Inventory products={data.products} sales={data.sales} onUpdate={setData} t={t} currency={data.settings.currency} />;
-      case 'sales': return <SalesPOS products={data.products} onCompleteSale={addSale} t={t} currency={data.settings.currency} />;
+      case 'sales': return <SalesPOS products={data.products} onCompleteSale={addSale} t={t} currency={data.settings.currency} settings={data.settings} />;
       case 'finance': return <Finance data={data} onAddTransaction={addTransaction} onUpdate={setData} t={t} />;
       case 'hr': return <HR data={data} onUpdate={setData} t={t} />;
       case 'ai': return <AutomationHub data={data} t={t} />;
@@ -157,11 +158,12 @@ const App: React.FC = () => {
       <aside className={`fixed inset-y-0 ${isRTL ? 'right-0' : 'left-0'} z-50 w-64 bg-white border-${isRTL ? 'l' : 'r'} border-slate-200 transform transition-transform duration-300 md:translate-x-0 md:static ${isSidebarOpen ? 'translate-x-0' : (isRTL ? 'translate-x-full' : '-translate-x-full')}`}>
         <div className="h-full flex flex-col">
           <div className="p-6 flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-100">
-              <Package size={24} />
-            </div>
-            <div>
-              <h1 className="font-black text-slate-800 tracking-tighter leading-none">{data.settings.companyName}</h1>
+            <Logo size={48} />
+            <div className={`${isRTL ? 'text-right' : 'text-left'}`}>
+              <h1 className="font-black text-slate-800 tracking-tighter leading-none flex flex-col">
+                <span className="text-indigo-600">MarufEdge</span>
+                <span className="text-orange-500 text-sm">ProMedia</span>
+              </h1>
               <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mt-1">Oman Edition</p>
             </div>
           </div>
@@ -196,7 +198,10 @@ const App: React.FC = () => {
         <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-4">
             <button className={`p-2 ${isRTL ? '-mr-2' : '-ml-2'} text-slate-500 md:hidden`} onClick={() => setSidebarOpen(true)}><Menu size={24} /></button>
-            <h2 className="text-lg font-bold text-slate-800">{t(activeTab as any)}</h2>
+            <div className="flex items-center gap-3">
+              <Logo size={24} className="md:hidden" />
+              <h2 className="text-lg font-bold text-slate-800">{t(activeTab as any)}</h2>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">

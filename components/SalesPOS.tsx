@@ -1,23 +1,31 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product, Sale, SaleItem } from '../types';
 import { Search, ShoppingBag, Trash2, CheckCircle, User, CreditCard, DollarSign, Percent, X, Receipt, ShieldCheck } from 'lucide-react';
+import InvoiceBill from './InvoiceBill';
 
 interface Props {
   products: Product[];
   onCompleteSale: (sale: Sale) => void;
   t: (key: any) => string;
   currency: string;
+  settings: any; // Pass settings for invoice
 }
 
-const SalesPOS: React.FC<Props> = ({ products, onCompleteSale, t, currency }) => {
+const SalesPOS: React.FC<Props> = ({ products, onCompleteSale, t, currency, settings }) => {
   const [cart, setCart] = useState<SaleItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'online'>('cash');
-  const [taxRate, setTaxRate] = useState(5);
+  const [taxRate, setTaxRate] = useState(settings.taxRate ?? 5);
   const [showTaxEdit, setShowTaxEdit] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
+  const [completedSale, setCompletedSale] = useState<Sale | null>(null);
+
+  // Synchronize tax rate if settings change while component is mounted
+  useEffect(() => {
+    setTaxRate(settings.taxRate ?? 5);
+  }, [settings.taxRate]);
 
   const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -45,7 +53,7 @@ const SalesPOS: React.FC<Props> = ({ products, onCompleteSale, t, currency }) =>
     const newSale: Sale = {
       id: Math.random().toString(36).substr(2, 9).toUpperCase(),
       timestamp: Date.now(),
-      items: cart,
+      items: [...cart],
       subtotal,
       taxAmount,
       totalAmount: grandTotal,
@@ -54,6 +62,7 @@ const SalesPOS: React.FC<Props> = ({ products, onCompleteSale, t, currency }) =>
     };
 
     onCompleteSale(newSale);
+    setCompletedSale(newSale);
     setCart([]);
     setCustomerName('');
     setIsConfirming(false);
@@ -96,7 +105,7 @@ const SalesPOS: React.FC<Props> = ({ products, onCompleteSale, t, currency }) =>
         </div>
       </div>
 
-      {/* Cart & Checkout (No structural changes needed) */}
+      {/* Cart & Checkout */}
       <div className="lg:col-span-4 bg-white rounded-3xl border border-slate-200 shadow-xl flex flex-col sticky top-20 h-fit max-h-[calc(100vh-120px)] overflow-hidden">
         <div className="p-6 border-b border-slate-100">
           <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -255,6 +264,15 @@ const SalesPOS: React.FC<Props> = ({ products, onCompleteSale, t, currency }) =>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Invoice Modal */}
+      {completedSale && (
+        <InvoiceBill 
+          sale={completedSale} 
+          settings={settings} 
+          onClose={() => setCompletedSale(null)} 
+        />
       )}
 
       {/* Tax Edit Modal Overlay */}
